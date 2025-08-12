@@ -1,0 +1,30 @@
+
+name: Build Node Modules (Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Build (if applicable)
+        run: |
+          if exist package.json (
+            npm run build || echo "No build script defined."
+          )
+      - name: Zip node_modules
+        run: powershell Compress-Archive -Path node_modules -DestinationPath node_modules.zip
+      - name: Upload node_modules.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: node_modules-windows
+          path: node_modules.zip
