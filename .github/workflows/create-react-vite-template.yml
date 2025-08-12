@@ -15,6 +15,16 @@ jobs:
           node-version: '20.x'
       - name: Scaffold React + Vite app
         run: npm create vite@latest my-react-app -- --template react
+        - name: Install MUI and dependencies
+          run: |
+            cd my-react-app
+            npm install @mui/material @emotion/react @emotion/styled
+        - name: Set up global dark theme
+          run: |
+            cd my-react-app
+            echo "import * as React from 'react';\nimport { ThemeProvider, createTheme } from '@mui/material/styles';\nimport CssBaseline from '@mui/material/CssBaseline';\n\nconst darkTheme = createTheme({ palette: { mode: 'dark' } });\n\nexport function AppWrapper({ children }) {\n  return (\n    <ThemeProvider theme={darkTheme}>\n      <CssBaseline />\n      {children}\n    </ThemeProvider>\n  );\n}\n" > src/ThemeProvider.jsx
+            sed -i "s/import React from 'react';/import React from 'react';\nimport { AppWrapper } from '.\/ThemeProvider';/" src/App.jsx
+            sed -i "s/export default App;/export default function WrappedApp() {\n  return <AppWrapper><App \/><\/AppWrapper>;\n}/" src/App.jsx
       - name: Zip React + Vite app
         run: zip -r my-react-app.zip my-react-app
       - name: Upload React + Vite template
