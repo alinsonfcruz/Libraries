@@ -1,0 +1,24 @@
+name: Create React + Vite Template
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Scaffold React + Vite app
+        run: npm create vite@latest my-react-app -- --template react
+      - name: Zip React + Vite app
+        run: zip -r my-react-app.zip my-react-app
+      - name: Upload React + Vite template
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-vite-template
+          path: my-react-app.zip
